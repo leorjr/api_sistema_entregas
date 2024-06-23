@@ -1,16 +1,57 @@
+import db from "../database"
+import IcreateEntregaRequest from "../types/IcreateEntregaRequest"
+import Ientrega from "../types/Ientrega"
 import IentregaRepository from "./IentregaRepository"
+
+
 
 class EntregaRepository implements IentregaRepository{
     
-    list() {
-        return "hello, from list on repository"
+    async list(): Promise<Ientrega[]> {
+        const data = await db.entregas.findMany()
+        return data
     }
 
-    getById() {
-        return "hello, from getById on repository"
+    async getById(id: number): Promise<Ientrega | null> {
+        const data = await db.entregas.findFirst({
+            where: {
+                id
+            }
+        })
+        return data
     }
-    create() {
-        return "hello, from create on repository"
+
+    async create(createEntregaRequest: IcreateEntregaRequest): Promise<Ientrega> {
+        const partida = await db.coordenadas.create({
+            data:{
+                lat: createEntregaRequest.partida.lat,
+                long: createEntregaRequest.partida.long
+            },
+            select:{
+                id: true
+            }
+        })
+
+        const destino = await db.coordenadas.create({
+            data:{
+                lat: createEntregaRequest.destino.lat,
+                long: createEntregaRequest.destino.long
+            },
+            select:{
+                id: true
+            }
+        })
+
+        const entrega = await db.entregas.create({
+            data:{
+                nome: createEntregaRequest.nome,
+                data: createEntregaRequest.data,
+                partida: partida.id,
+                destino: destino.id
+            }
+        })
+
+        return entrega
     }
 }
 
