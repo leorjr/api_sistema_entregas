@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 import IentregaService from "../services/IentregaService";
+import IGenericResponseDto from "../types/IgenericResponseDto";
 
 class EntregaController{
     constructor(
@@ -8,19 +9,42 @@ class EntregaController{
     ){}
 
     async list(req: Request, res: Response){
-        const response = await this.service.list()
+        const data = await this.service.list()
+
+        const response: IGenericResponseDto = {
+			success: true,
+			status: httpStatus.OK,
+			data,
+		};
+        
         return res.status(httpStatus.OK).json(response)
     }
 
     async getById(req: Request, res: Response){
         const {id} = req.params;
-        const response = await this.service.getById(Number(id))
+
+        const data = await this.service.getById(Number(id))
+
+        const response: IGenericResponseDto = {
+			success: true,
+			status: httpStatus.OK,
+			data,
+		};
+
         return res.status(httpStatus.OK).json(response)
     }
 
     async create(req: Request, res: Response){
         const {nome, data, partida, destino} = req.body
-        const response = await this.service.create({nome, data: new Date(data), partida, destino})
+        
+        const _data = await this.service.create({nome, data: new Date(data), partida, destino})
+
+        const response: IGenericResponseDto = {
+			success: true,
+			status: httpStatus.OK,
+			data: _data,
+		};
+
         return res.status(httpStatus.OK).json(response)
     }
 }
