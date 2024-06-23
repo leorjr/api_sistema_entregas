@@ -1,0 +1,199 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "API UNICAD - Sistema de Entregas com Geolocalização",
+      "description": "Essa API tem como objetivo gerenciar entregas e suas localizações",
+      "contact": {
+        "email": "l.grodriguesjr@gmail.com"
+      }
+    },
+    "servers": [
+      {
+        "url": "http://localhost:3000/api",
+        "description": "API de teste"
+      },
+      {
+        "url": "http://www.google.com",
+        "description": "API de produção"
+      }
+    ],
+    "paths": {
+      "/entregas": {
+        "post": {
+          "summary": "Criar Entrega",
+          "description": "Essa rota será responsável por criar uma nova entrega",
+          "tags": ["Entregas"],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateEntrega"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Entrega criada com sucesso",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/GenericResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "get": {
+          "summary": "Listar Entregas",
+          "description": "Essa rota será responsável por listar todas as entregas",
+          "tags": ["Entregas"],
+          "responses": {
+            "200": {
+              "description": "Lista de entregas",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/GenericResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/entregas/{id}": {
+        "get": {
+          "summary": "Obter Entrega por ID",
+          "description": "Essa rota será responsável por obter uma entrega específica pelo ID",
+          "tags": ["Entregas"],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "description": "ID da entrega",
+              "schema": {
+                "type": "integer"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Detalhes da entrega",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/GenericResponse"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Entrega não encontrada",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/GenericResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "CreateEntrega": {
+          "type": "object",
+          "required": ["nome", "data", "partida", "destino"],
+          "properties": {
+            "nome": {
+              "type": "string",
+              "description": "Nome da entrega"
+            },
+            "data": {
+              "type": "string",
+              "format": "date",
+              "description": "Data da entrega no formato YYYY-MM-DD"
+            },
+            "partida": {
+              "$ref": "#/components/schemas/Coordenada"
+            },
+            "destino": {
+              "$ref": "#/components/schemas/Coordenada"
+            }
+          }
+        },
+        "Coordenada": {
+          "type": "object",
+          "required": ["lat", "long"],
+          "properties": {
+            "lat": {
+              "type": "string",
+              "description": "Latitude da coordenada"
+            },
+            "long": {
+              "type": "string",
+              "description": "Longitude da coordenada"
+            }
+          }
+        },
+        "Entrega": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "ID da entrega"
+            },
+            "nome": {
+              "type": "string",
+              "description": "Nome da entrega"
+            },
+            "data": {
+              "type": "string",
+              "format": "date",
+              "description": "Data da entrega no formato YYYY-MM-DD"
+            },
+            "partida": {
+              "$ref": "#/components/schemas/Coordenada"
+            },
+            "destino": {
+              "$ref": "#/components/schemas/Coordenada"
+            }
+          }
+        },
+        "GenericResponse": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "integer",
+              "description": "Código de status HTTP"
+            },
+            "success": {
+              "type": "boolean",
+              "description": "Indica se a operação foi bem-sucedida"
+            },
+            "data": {
+              "type": "object",
+              "description": "Dados retornados pela operação"
+            },
+            "message": {
+              "type": "string",
+              "description": "Mensagem adicional"
+            },
+            "errors": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              },
+              "description": "Lista de erros ocorridos"
+            }
+          }
+        }
+      }
+    }
+  }

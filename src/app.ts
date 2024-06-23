@@ -1,13 +1,16 @@
 import { PrismaClient } from "@prisma/client";
 import express from "express";
+import swaggerUi from "swagger-ui-express";
 import errorHandler from "./middlewares/errorHandler";
 import notFoundHandler from "./middlewares/notFoundHandler";
 import router from "./routes";
+import swaggerDocs from "./swagger.json";
 
 const app = express()
 const prisma = new PrismaClient();
 
 app.use(express.json())
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/api', router)
 app.use(notFoundHandler)
 app.use(errorHandler);
