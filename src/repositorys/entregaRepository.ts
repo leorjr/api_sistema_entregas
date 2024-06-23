@@ -1,72 +1,41 @@
-import httpStatus from "http-status"
-import db from "../database"
-import BaseError from "../errors/baseError"
-import IcreateEntregaRequest from "../types/IcreateEntregaRequest"
-import Ientrega from "../types/Ientrega"
-import IentregaRepository from "./IentregaRepository"
+import httpStatus from "http-status";
+import db from "../database";
+import BaseError from "../errors/baseError";
+import Entrega from "../models/Entrega";
+import IcreateEntregaRequest from "../types/IcreateEntregaRequest";
+import Ientrega from "../types/Ientrega";
+import IentregaRepository from "./IentregaRepository";
 
-class EntregaRepository implements IentregaRepository{
-    
-    async list(): Promise<Ientrega[]> {
-        const data = await db.entregas.findMany()
-        return data
+
+
+class EntregaRepository implements IentregaRepository {
+    async list(limit: number, offset: number): Promise<{ data: Entrega[]; count: number; }> {
+        const [data, count] = await Promise.all([
+            db.entregas.findMany({
+                skip: offset,
+                take: limit,
+            }),
+            db.entregas.count()
+        ]);
+        return { data, count };
     }
 
     async getById(id: number): Promise<Ientrega | null> {
-        const data = await db.entregas.findFirst({
-            where: {
-                id
-            }
-        })
-        return data
+        return db.entregas.findFirst({
+            where: { id }
+        });
     }
 
     async create(createEntregaRequest: IcreateEntregaRequest): Promise<Ientrega> {
-        let partida = await this.getCoordenada(
-            createEntregaRequest.partida.lat,
-            createEntregaRequest.partida.long
-        );
-        if (!partida) {
-            partida = await db.coordenadas.create({
-                data: {
-                    lat: createEntregaRequest.partida.lat,
-                    long: createEntregaRequest.partida.long
-                },
-                select: {
-                    id: true
-                }
-            });
-        }
+        const partida = await this.ensureCoordenada(createEntregaRequest.partida.lat, createEntregaRequest.partida.long);
+        const destino = await this.ensureCoordenada(createEntregaRequest.destino.lat, createEntregaRequest.destino.long);
 
-        let destino = await this.getCoordenada(
-            createEntregaRequest.destino.lat,
-            createEntregaRequest.destino.long
-        );
-
-        if (!destino) {
-            destino = await db.coordenadas.create({
-                data: {
-                    lat: createEntregaRequest.destino.lat,
-                    long: createEntregaRequest.destino.long
-                },
-                select: {
-                    id: true
-                }
-            });
-        }
-
-        const entregaExists = await this.exists(
-            createEntregaRequest.nome,
-            createEntregaRequest.data,
-            partida.id,
-            destino.id
-        );
-
+        const entregaExists = await this.exists(createEntregaRequest.nome, createEntregaRequest.data, partida.id, destino.id);
         if (entregaExists) {
-            throw new BaseError(httpStatus.CONFLICT, 'entrega já cadastrada anteriormente');
+            throw new BaseError(httpStatus.CONFLICT, 'Entrega já cadastrada anteriormente');
         }
 
-        const entrega = await db.entregas.create({
+        return db.entregas.create({
             data: {
                 nome: createEntregaRequest.nome,
                 data: createEntregaRequest.data,
@@ -74,8 +43,6 @@ class EntregaRepository implements IentregaRepository{
                 destino: destino.id
             }
         });
-
-        return entrega;
     }
 
     async exists(nome: string, data: Date, partidaId: number, destinoId: number): Promise<boolean> {
@@ -87,23 +54,26 @@ class EntregaRepository implements IentregaRepository{
                 destino: destinoId
             }
         });
-
         return existingEntrega !== null;
     }
 
     async getCoordenada(lat: string, long: string): Promise<{ id: number } | null> {
-        const coordenada = await db.coordenadas.findFirst({
-            where: {
-                lat,
-                long
-            },
-            select: {
-                id: true
-            }
+        return db.coordenadas.findFirst({
+            where: { lat, long },
+            select: { id: true }
         });
+    }
 
+    async ensureCoordenada(lat: string, long: string): Promise<{ id: number }> {
+        let coordenada = await this.getCoordenada(lat, long);
+        if (!coordenada) {
+            coordenada = await db.coordenadas.create({
+                data: { lat, long },
+                select: { id: true }
+            });
+        }
         return coordenada;
     }
 }
 
-export default EntregaRepository
+export default EntregaRepository;

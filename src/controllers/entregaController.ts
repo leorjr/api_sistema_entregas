@@ -8,44 +8,44 @@ class EntregaController{
         private readonly service: IentregaService
     ){}
 
-    async list(req: Request, res: Response){
-        const data = await this.service.list()
-
-        const response: IGenericResponseDto = {
-			success: true,
-			status: httpStatus.OK,
-			data,
-		};
+    async list(req: Request, res: Response) {
+        const limit = parseInt(req.query.limit as string) || 10;
+        const offset = parseInt(req.query.offset as string) || 0;
         
-        return res.status(httpStatus.OK).json(response)
+        const { data, count } = await this.service.list(limit, offset);
+        
+        return this.createResponse(res, httpStatus.OK, {entregas: data, count});
     }
 
     async getById(req: Request, res: Response){
-        const {id} = req.params;
+        const { id } = req.params;
 
-        const data = await this.service.getById(Number(id))
-
-        const response: IGenericResponseDto = {
-			success: true,
-			status: httpStatus.OK,
-			data,
-		};
-
-        return res.status(httpStatus.OK).json(response)
+        const data = await this.service.getById(Number(id));
+        
+        return this.createResponse(res, httpStatus.OK, data);
     }
 
     async create(req: Request, res: Response){
-        const {nome, data, partida, destino} = req.body
+        const { nome, data, partida, destino } = req.body;
+            
+        const createdData = await this.service.create({
+            nome, 
+            data: new Date(data), 
+            partida, 
+            destino
+        });
         
-        const _data = await this.service.create({nome, data: new Date(data), partida, destino})
+        return this.createResponse(res, httpStatus.CREATED, createdData);
+    }
 
+    private createResponse(res: Response, status: number, data: any, message?: string) {
         const response: IGenericResponseDto = {
-			success: true,
-			status: httpStatus.OK,
-			data: _data,
-		};
-
-        return res.status(httpStatus.OK).json(response)
+            success: true,
+            status,
+            data,
+            message,
+        };
+        return res.status(status).json(response);
     }
 }
 
