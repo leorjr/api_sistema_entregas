@@ -1,7 +1,7 @@
 import * as yup from "yup";
 
 const createEntregaSchema = yup.object().shape({
-	nome: yup.string().matches(/^[A-Za-z]+$/, "nome deve conter apenas letras").min(3, "nome deve ter ao menos 3 caracteres").required("nome é obrigatório"),
+	nome: yup.string().min(3, "nome deve ter ao menos 3 caracteres").required("nome é obrigatório"),
 	data: yup.date().required("data é obrigatória").typeError("data deve estar no formato YYYY-MM-DD"),
 	partida: yup.object().shape({
 		lat: yup.string().required("lat em partida é obrigatório"),
