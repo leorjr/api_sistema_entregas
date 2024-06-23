@@ -1,3 +1,5 @@
+import httpStatus from "http-status";
+import BaseError from "../errors/baseError";
 import Entrega from "../models/Entrega";
 import IentregaRepository from "../repositorys/IentregaRepository";
 import IcreateEntregaRequest from "../types/IcreateEntregaRequest";
@@ -19,7 +21,7 @@ class EntregaService implements IentregaService{
         const data = await this.repository.getById(id)
 
         if(!data)
-            throw new Error(`entrega com id ${id} não encontrada`)
+            throw new BaseError(httpStatus.NOT_FOUND, `entrega com id ${id} não encontrada`)
 
         const entrega = new Entrega(data.id, data.nome, data.data)
 
