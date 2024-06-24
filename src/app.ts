@@ -10,7 +10,7 @@ const app = express()
 const prisma = new PrismaClient();
 
 app.use(express.json())
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/api', router)
 app.use(notFoundHandler)
 app.use(errorHandler);
