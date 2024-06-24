@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import cors from "cors";
 import express from "express";
 import swaggerUi from "swagger-ui-express";
 import errorHandler from "./middlewares/errorHandler";
@@ -9,6 +10,7 @@ import swaggerDocs from "./swagger.json";
 const app = express()
 const prisma = new PrismaClient();
 
+app.use(cors());
 app.use(express.json())
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 app.use('/api', router)
