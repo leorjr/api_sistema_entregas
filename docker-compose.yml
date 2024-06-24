@@ -7,6 +7,10 @@ services:
     container_name: unicad-sistemas-entrega
     depends_on:
       - postgres
+    ports:
+      - "3000:3000"
+    expose:
+      - 3000
     networks:
       - unicad-network
     env_file:
@@ -31,24 +35,8 @@ services:
     env_file:
       - .env
 
-  nginx:
-    build:
-      context: ./
-      dockerfile: Dockerfile.nginx
-    container_name: nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - letsencrypt:/etc/letsencrypt
-      - nginx-data:/var/lib/nginx
-    networks:
-      - unicad-network
-
 volumes:
   postgres-data:
-  letsencrypt:
-  nginx-data:
 
 networks:
   unicad-network:
