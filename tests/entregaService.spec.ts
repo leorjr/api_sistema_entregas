@@ -11,7 +11,6 @@ describe('EntregaService', () => {
     let service: EntregaService;
 
     beforeEach(() => {
-        // Mock the repository
         mockRepository = {
             list: vi.fn(),
             getById: vi.fn(),
@@ -28,8 +27,20 @@ describe('EntregaService', () => {
     describe('list', () => {
         it('should return a list of entregas with count', async () => {
             const mockData = [
-                { id: 1, nome: 'Entrega 1', data: new Date() },
-                { id: 2, nome: 'Entrega 2', data: new Date() },
+                {
+                    id: 1,
+                    nome: 'Entrega 1',
+                    data: new Date(),
+                    CoordenadasPartida: { lat: '1.1', long: '1.2' },
+                    CoordenadasDestino: { lat: '2.1', long: '2.2' },
+                },
+                {
+                    id: 2,
+                    nome: 'Entrega 2',
+                    data: new Date(),
+                    CoordenadasPartida: { lat: '3.1', long: '3.2' },
+                    CoordenadasDestino: { lat: '4.1', long: '4.2' },
+                }
             ];
             const mockCount = 2;
 
@@ -38,7 +49,7 @@ describe('EntregaService', () => {
             const result = await service.list(10, 0);
 
             expect(result).toEqual({
-                data: mockData.map(item => new Entrega(item.id, item.nome, item.data)),
+                data: mockData.map(item => new Entrega(item.id, item.nome, item.data, { lat: item.CoordenadasPartida.lat, long: item.CoordenadasPartida.long }, { lat: item.CoordenadasDestino.lat, long: item.CoordenadasDestino.long })),
                 count: mockCount,
             });
             expect(mockRepository.list).toHaveBeenCalledWith(10, 0);
@@ -59,13 +70,19 @@ describe('EntregaService', () => {
 
     describe('getById', () => {
         it('should return a entrega by id', async () => {
-            const mockData = { id: 1, nome: 'Entrega 1', data: new Date() };
+            const mockData = {
+                id: 1,
+                nome: 'Entrega 1',
+                data: new Date(),
+                CoordenadasPartida: { lat: '1.1', long: '1.2' },
+                CoordenadasDestino: { lat: '2.1', long: '2.2' },
+            };
 
             (mockRepository.getById as vi.Mock).mockResolvedValue(mockData);
 
             const result = await service.getById(1);
 
-            expect(result).toEqual(new Entrega(mockData.id, mockData.nome, mockData.data));
+            expect(result).toEqual(new Entrega(mockData.id, mockData.nome, mockData.data, { lat: mockData.CoordenadasPartida.lat, long: mockData.CoordenadasPartida.long }, { lat: mockData.CoordenadasDestino.lat, long: mockData.CoordenadasDestino.long }));
             expect(mockRepository.getById).toHaveBeenCalledWith(1);
         });
 
@@ -86,13 +103,19 @@ describe('EntregaService', () => {
                 destino: { lat: '2', long: '2' }
             };
 
-            const mockData = { id: 1, nome: createRequest.nome, data: createRequest.data };
+            const mockData = {
+                id: 1,
+                nome: createRequest.nome,
+                data: createRequest.data,
+                CoordenadasPartida: { lat: '1', long: '1' },
+                CoordenadasDestino: { lat: '2', long: '2' },
+            };
 
             (mockRepository.create as vi.Mock).mockResolvedValue(mockData);
 
             const result = await service.create(createRequest);
 
-            expect(result).toEqual(new Entrega(mockData.id, mockData.nome, mockData.data));
+            expect(result).toEqual(new Entrega(mockData.id, mockData.nome, mockData.data, { lat: mockData.CoordenadasPartida.lat, long: mockData.CoordenadasPartida.long }, { lat: mockData.CoordenadasDestino.lat, long: mockData.CoordenadasDestino.long }));
             expect(mockRepository.create).toHaveBeenCalledWith(createRequest);
         });
 

@@ -63,16 +63,19 @@ A seguir, são apresentados exemplos de endpoints da API e seus retornos:
 ```json
 {
   "success": true,
-  "status": 200,
+  "status": 201,
   "data": {
-    "entregas": [
-      {
-        "id": 1,
-        "nome": "leonardo",
-        "data": "2024-02-02T00:00:00.000Z"
-      }
-    ],
-    "count": 1
+    "id": 1,
+    "nome": "leonardo",
+    "data": "2023-02-02T00:00:00.000Z",
+    "partida": {
+      "lat": "-401.000",
+      "long": "600.000"
+    },
+    "destino": {
+      "lat": "-600.000",
+      "long": "700.000"
+    }
   }
 }
 ```
@@ -99,7 +102,15 @@ A seguir, são apresentados exemplos de endpoints da API e seus retornos:
       {
         "id": 1,
         "nome": "leonardo",
-        "data": "2024-02-02T00:00:00.000Z"
+        "data": "2023-02-02T00:00:00.000Z",
+        "partida": {
+          "lat": "-401.000",
+          "long": "600.000"
+        },
+        "destino": {
+          "lat": "-600.000",
+          "long": "700.000"
+        }
       }
     ],
     "count": 1
@@ -127,7 +138,15 @@ A seguir, são apresentados exemplos de endpoints da API e seus retornos:
   "data": {
     "id": 1,
     "nome": "leonardo",
-    "data": "2024-02-02T00:00:00.000Z"
+    "data": "2023-02-02T00:00:00.000Z",
+    "partida": {
+      "lat": "-401.000",
+      "long": "600.000"
+    },
+    "destino": {
+      "lat": "-600.000",
+      "long": "700.000"
+    }
   }
 }
 ```
