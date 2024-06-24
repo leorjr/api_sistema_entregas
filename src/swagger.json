@@ -11,10 +11,6 @@
       {
         "url": "http://localhost:3000/api",
         "description": "API de teste"
-      },
-      {
-        "url": "http://www.google.com",
-        "description": "API de produção"
       }
     ],
     "paths": {
