@@ -4,6 +4,7 @@ services:
       context: ./
       dockerfile: Dockerfile
     image: unicad-sistemas-entrega
+    container_name: unicad-sistemas-entrega
     depends_on:
       - postgres
     ports:
@@ -12,6 +13,8 @@ services:
       - 3000
     networks:
       - unicad-network
+    env_file:
+      - .env
     command: >
       sh -c "npx prisma migrate dev && npm run dev"
 
@@ -20,15 +23,17 @@ services:
     container_name: postgres-db
     restart: always
     environment:
-      POSTGRES_USER: leonardo
-      POSTGRES_PASSWORD: junior
-      POSTGRES_DB: unicad
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "5434:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - unicad-network
+    env_file:
+      - .env
 
 volumes:
   postgres-data:
