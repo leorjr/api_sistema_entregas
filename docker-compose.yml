@@ -1,24 +1,38 @@
-version: "3.8"
-
 services:
-  database:
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: unicad-sistemas-entrega
+    depends_on:
+      - postgres
+    ports:
+      - "3000:3000"
+    expose:
+      - 3000
+    networks:
+      - unicad-network
+    command: >
+      sh -c "npx prisma migrate dev && npm run dev"
+
+  postgres:
     image: postgres:latest
-    container_name: database
+    container_name: postgres-db
     restart: always
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: leonardo
+      POSTGRES_PASSWORD: junior
+      POSTGRES_DB: unicad
     ports:
-      - "${DB_PORT}:5432"
+      - "5434:5432"
     volumes:
-      - database:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     networks:
-      - sistema-entregas
+      - unicad-network
 
 volumes:
-  database:
+  postgres-data:
 
 networks:
-  sistema-entregas:
+  unicad-network:
     driver: bridge
