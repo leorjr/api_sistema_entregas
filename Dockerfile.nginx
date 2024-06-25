@@ -1,7 +1,0 @@
-FROM nginx:latest
-
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY selfsigned.crt /etc/nginx/selfsigned.crt
-COPY selfsigned.key /etc/nginx/selfsigned.key
-
-CMD ["nginx", "-g", "daemon off;"]
